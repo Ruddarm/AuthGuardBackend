@@ -1,5 +1,5 @@
 package authgaurd.authgaurd.model.dto;
 
-public class appRequest {
+public class AppRequest {
     
 }

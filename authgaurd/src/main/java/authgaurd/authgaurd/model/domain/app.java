@@ -1,5 +1,5 @@
 package authgaurd.authgaurd.model.domain;
 
-public class app {
+public class App {
     
 }

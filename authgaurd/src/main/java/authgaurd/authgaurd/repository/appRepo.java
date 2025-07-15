@@ -1,5 +1,5 @@
 package authgaurd.authgaurd.repository;
 
-public class appRepo {
+public class AppRepo {
     
 }
