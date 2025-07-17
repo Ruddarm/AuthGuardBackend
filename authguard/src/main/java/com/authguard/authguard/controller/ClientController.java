@@ -14,6 +14,8 @@ import com.authguard.authguard.model.entity.ClientEntity;
 import com.authguard.authguard.model.mapper.ClientMapper;
 import com.authguard.authguard.services.ClientService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/client")
 public class ClientController {
@@ -22,12 +24,12 @@ public class ClientController {
 
     // @GetMapping("/login")
     // public ResponseEntity<ClientResponse> getMethodName() {
-    // // Response<Ent
+    // // Resp4onse<Ent
     // return new ResponseEntity<>(new ClientResponse("ruddarm", "123"),
     // HttpStatus.OK);
     // }
     @PostMapping("/signup")
-    public ResponseEntity<ClientResponse> singup(@RequestBody ClientRequest clientRequest) {
+    public ResponseEntity<ClientResponse> singup(@Valid @RequestBody ClientRequest clientRequest) {
         ClientEntity clientEntity = clientService.saveClient(ClientMapper.toClientEntity(clientRequest));
         return new ResponseEntity<>(ClientMapper.toClientResponse(clientEntity), HttpStatus.OK);
     }

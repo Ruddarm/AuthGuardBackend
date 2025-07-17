@@ -2,14 +2,18 @@ package com.authguard.authguard.model.dto;
 
 import java.util.UUID;
 
-import com.authguard.authguard.model.baseModel.BaseClient;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Data
-@SuperBuilder
-public class ClientResponse extends BaseClient {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ClientResponse  {
     private UUID clientId;
-
+    private String name;
+    private String email;
 }
