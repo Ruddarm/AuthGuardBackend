@@ -17,7 +17,6 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 import lombok.Builder;
-import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "client")
