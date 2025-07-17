@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({ResourceExist.class})
+    @ExceptionHandler({ResourceFound.class})
     public ResponseEntity<ErrorResponse> handleOtherExceptions(Exception ex) {
         System.err.println("Exception occured in exception");
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);

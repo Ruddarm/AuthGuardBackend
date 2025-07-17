@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.authguard.authguard.Exception.ResourceExist;
+import com.authguard.authguard.Exception.ResourceFound;
 import com.authguard.authguard.model.dto.ClientRequest;
 import com.authguard.authguard.model.dto.ClientResponse;
 import com.authguard.authguard.model.entity.ClientEntity;
@@ -30,7 +30,7 @@ public class ClientController {
     // HttpStatus.OK);
     // }
     @PostMapping("/signup")
-    public ResponseEntity<ClientResponse> singup(@Valid @RequestBody ClientRequest clientRequest) throws ResourceExist {
+    public ResponseEntity<ClientResponse> singup(@Valid @RequestBody ClientRequest clientRequest) throws ResourceFound {
         ClientEntity clientEntity = clientService.saveClient(ClientMapper.toClientEntity(clientRequest));
         return new ResponseEntity<>(ClientMapper.toClientResponse(clientEntity), HttpStatus.OK);
     }
