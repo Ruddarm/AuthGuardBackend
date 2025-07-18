@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import com.authguard.authguard.Exception.ResourceFound;
 import com.authguard.authguard.model.entity.AppEntity;
 import com.authguard.authguard.model.entity.ClientEntity;
-import com.authguard.authguard.repository.AppRepostiory;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class AppService {
-    private final AppRepostiory appRepostiory;
     private final ClientService clientService;
 
     @Transactional

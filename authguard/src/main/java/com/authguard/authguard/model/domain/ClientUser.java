@@ -1,12 +1,10 @@
 package com.authguard.authguard.model.domain;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.UUID;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import com.authguard.authguard.model.entity.AppEntity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,6 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class ClientUser implements UserDetails {
+    private UUID userId;
     private String username;
     private String password;
 

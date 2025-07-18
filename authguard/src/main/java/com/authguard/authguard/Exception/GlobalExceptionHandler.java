@@ -1,9 +1,12 @@
-package  com.authguard.authguard.Exception;
+package com.authguard.authguard.Exception;
+
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,7 +18,7 @@ import com.authguard.authguard.model.dto.ErrorResponse;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({MethodArgumentNotValidException.class})
+    @ExceptionHandler({ MethodArgumentNotValidException.class })
     public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error -> {
@@ -24,9 +27,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({ResourceFound.class})
+    @ExceptionHandler({ ResourceFound.class })
     public ResponseEntity<ErrorResponse> handleOtherExceptions(Exception ex) {
-        System.err.println("Exception occured in exception");
-        return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        // System.err.println("Exception occured in exception");
+        return new ResponseEntity<>(new ErrorResponse("Invalid credentials"), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler({ BadCredentialsException.class, AuthenticationException.class })
+    public ResponseEntity<ErrorResponse> handleCredentialExceptions(Exception ex) {
+        System.out.println("Wrong information");
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 }

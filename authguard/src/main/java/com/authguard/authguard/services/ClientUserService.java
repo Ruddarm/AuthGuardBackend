@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import com.authguard.authguard.model.domain.ClientUser;
 import com.authguard.authguard.model.entity.ClientEntity;
-import com.authguard.authguard.repository.ClientRepository;
 
 import lombok.AllArgsConstructor;
 
@@ -20,7 +19,7 @@ public class ClientUserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         ClientEntity clientEntity = clientService.clientRepo.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        return new ClientUser(clientEntity.getEmail(), clientEntity.getHashPassword());
+        return new ClientUser(clientEntity.getClientId(), clientEntity.getEmail(), clientEntity.getHashPassword());
 
     }
 
