@@ -1,11 +1,9 @@
 package com.authguard.authguard.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import static org.springframework.security.config.Customizer.withDefaults;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -26,13 +24,12 @@ public class WebSecurityConfiguration {
     private final JwtAuthFilter jwtAuthFilter;
     private final PasswordEncoder pswdEncoder;
 
-
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(
                 (auth) -> auth.requestMatchers("/auth/**").permitAll().anyRequest().authenticated())
-                .csrf(crsfConfig -> crsfConfig.disable()).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .httpBasic(withDefaults());
+                .csrf(crsfConfig -> crsfConfig.disable())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }
 
@@ -42,11 +39,11 @@ public class WebSecurityConfiguration {
         daoprovider.setPasswordEncoder(pswdEncoder);
         return daoprovider;
     }
-    
-    @Bean
-    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-       return authenticationConfiguration.getAuthenticationManager();
-    }
 
+    @Bean
+    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 
 }

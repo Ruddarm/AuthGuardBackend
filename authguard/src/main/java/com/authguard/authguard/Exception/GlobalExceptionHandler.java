@@ -3,6 +3,7 @@ package com.authguard.authguard.Exception;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.authguard.authguard.model.dto.ErrorResponse;
+
+import io.jsonwebtoken.ExpiredJwtException;
 
 @ControllerAdvice
 @RestControllerAdvice
@@ -27,7 +30,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({ ResourceFound.class })
+    @ExceptionHandler({ ResourceException.class })
     public ResponseEntity<ErrorResponse> handleOtherExceptions(Exception ex) {
         // System.err.println("Exception occured in exception");
         return new ResponseEntity<>(new ErrorResponse("Invalid credentials"), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -35,7 +38,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({ BadCredentialsException.class, AuthenticationException.class })
     public ResponseEntity<ErrorResponse> handleCredentialExceptions(Exception ex) {
-        System.out.println("Wrong information");
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
+  
 }

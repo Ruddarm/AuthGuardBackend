@@ -1,6 +1,5 @@
 package com.authguard.authguard.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,15 +8,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.authguard.authguard.Exception.ResourceFound;
+import com.authguard.authguard.Exception.ResourceException;
 import com.authguard.authguard.model.dto.ClientRequest;
 import com.authguard.authguard.model.dto.ClientResponse;
 import com.authguard.authguard.model.dto.LoginRequest;
+import com.authguard.authguard.model.dto.LoginResponse;
 import com.authguard.authguard.model.entity.ClientEntity;
 import com.authguard.authguard.model.mapper.ClientMapper;
 import com.authguard.authguard.services.ClientAuthService;
 import com.authguard.authguard.services.ClientService;
-
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,18 +31,44 @@ public class ClientAuthController {
     private final ClientAuthService clientAuthService;
 
     @GetMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request,
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest,
+            HttpServletRequest request,
             HttpServletResponse response) {
-        String token = clientAuthService.validateLogin(loginRequest);
-        Cookie cookie = new Cookie("jwtToken", token);
-        cookie.setHttpOnly(true);
-        response.addCookie(cookie);
-        return new ResponseEntity<>("", HttpStatus.ACCEPTED);
+        String token[] = clientAuthService.validateLogin(loginRequest);
+        Cookie refreshToken = new Cookie("refresh-token", token[1]);
+        refreshToken.setHttpOnly(true);
+        refreshToken.setPath("/auth/client/refresh");
+        response.addCookie(refreshToken);
+        return new ResponseEntity<>(LoginResponse.builder().accessToken(token[0]).build(), HttpStatus.ACCEPTED);
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<ClientResponse> singup(@Valid @RequestBody ClientRequest clientRequest) throws ResourceFound {
+    public ResponseEntity<ClientResponse> singup(@Valid @RequestBody ClientRequest clientRequest)
+            throws ResourceException {
         ClientEntity clientEntity = clientService.saveClient(ClientMapper.toClientEntity(clientRequest));
         return new ResponseEntity<>(ClientMapper.toClientResponse(clientEntity), HttpStatus.OK);
     }
+
+    @GetMapping("/refresh")
+    public ResponseEntity<LoginResponse> refreshToken(HttpServletRequest request,
+            HttpServletResponse response) throws ResourceException {
+        Cookie[] cookies = request.getCookies();
+        String refreshToken = null;
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("refresh-token")) {
+                refreshToken = cookie.getValue();
+                break;
+            }
+        }
+        if (refreshToken == null)
+            throw new ResourceException("refresh token not found");
+        String[] tokens = clientAuthService.refreshToken(refreshToken);
+        Cookie NewrefreshToken = new Cookie("refresh-token", tokens[1]);
+        NewrefreshToken.setHttpOnly(true);
+        NewrefreshToken.setPath("/auth/client/refresh");
+        response.addCookie(NewrefreshToken);
+        return new ResponseEntity<>(LoginResponse.builder().accessToken(tokens[0]).build(), HttpStatus.ACCEPTED);
+        // return new ResponseEntity<LoginResponse>();
+    }
+
 }

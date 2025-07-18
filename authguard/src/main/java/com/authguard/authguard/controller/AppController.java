@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import com.authguard.authguard.Exception.ResourceFound;
+import com.authguard.authguard.Exception.ResourceException;
 import com.authguard.authguard.model.dto.AppRequest;
 import com.authguard.authguard.model.dto.AppResponse;
 import com.authguard.authguard.model.entity.AppEntity;
@@ -29,7 +29,7 @@ public class AppController {
 
     @PutMapping("/app/{clientId}")
     public ResponseEntity<AppResponse> putMethodName(@PathVariable UUID clientId,
-            @Valid @RequestBody AppRequest appRequest) throws ResourceFound {
+            @Valid @RequestBody AppRequest appRequest) throws ResourceException {
         AppEntity app = appService.createApp(AppMapper.toAppEntity(appRequest), clientId);
         return new ResponseEntity<>(AppMapper.toAppResponse(app), HttpStatus.CREATED);
     }

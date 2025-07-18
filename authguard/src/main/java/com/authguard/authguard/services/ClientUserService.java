@@ -17,8 +17,8 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class ClientUserService implements UserDetailsService {
+    
     private final ClientService clientService;
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         ClientEntity clientEntity = clientService.clientRepo.findByEmail(username)

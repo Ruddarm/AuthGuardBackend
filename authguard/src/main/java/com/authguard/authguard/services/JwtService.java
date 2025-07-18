@@ -25,7 +25,14 @@ public class JwtService {
 
     public String createToken(ClientUser clientUser) {
         return Jwts.builder().subject(clientUser.getUserId().toString()).claim("email", clientUser.getUsername())
-                .issuedAt(new Date()).expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
+                .issuedAt(new Date()).expiration(new Date(System.currentTimeMillis() + 1000 * 60))
+                .signWith(generateSecretKey())
+                .compact();
+    }
+
+    public String refreshToken(ClientUser clientUser) {
+        return Jwts.builder().subject(clientUser.getUserId().toString()).issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60*60*24*7))
                 .signWith(generateSecretKey())
                 .compact();
     }

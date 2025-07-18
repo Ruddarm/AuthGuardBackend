@@ -15,4 +15,5 @@ public class ClientResponse  {
     private UUID clientId;
     private String name;
     private String email;
+    private String accessToken;
 }
