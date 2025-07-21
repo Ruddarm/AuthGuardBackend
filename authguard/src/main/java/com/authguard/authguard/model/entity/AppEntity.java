@@ -44,7 +44,7 @@ public class AppEntity {
     @ManyToOne
     @JoinColumn(nullable = false, name = "clientId")
     private ClientEntity client;
-    @OneToOne
+    @OneToOne(cascade = { CascadeType.ALL })
     @JoinColumn(name = "apiKeyId")
     private ApiKeyEntity apiKeyEntity;
 

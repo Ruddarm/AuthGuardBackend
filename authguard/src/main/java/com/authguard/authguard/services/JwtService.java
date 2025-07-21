@@ -8,7 +8,10 @@ import javax.crypto.SecretKey;
 
 import org.springframework.stereotype.Service;
 
+import com.authguard.authguard.model.domain.AuthUser;
 import com.authguard.authguard.model.domain.ClientAuth;
+import com.authguard.authguard.model.domain.UserType;
+import com.authguard.authguard.model.entity.AppEntity;
 import com.authguard.authguard.model.entity.UserEntity;
 
 import io.jsonwebtoken.Claims;
@@ -24,19 +27,37 @@ public class JwtService {
         return Keys.hmacShaKeyFor(SecretJwtKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createToken(ClientAuth authUser) {
+    private SecretKey generateSecretKey(String apiKey) {
+        return Keys.hmacShaKeyFor(apiKey.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public String createToken(AuthUser authUser) {
         return Jwts.builder().subject(authUser.getUserId().toString()).claim("email", authUser.getUsername())
+                .claim("userType", authUser.getUserType())
                 .issuedAt(new Date()).expiration(new Date(System.currentTimeMillis() + 1000 * 60))
                 .signWith(generateSecretKey())
                 .compact();
     }
 
+    public String createToken(AuthUser authUser, AppEntity app) {
+        return Jwts.builder().subject(authUser.getUserId().toString()).claim("email", authUser.getUsername())
+                .claim("userType", authUser.getUserType())
+                .issuedAt(new Date()).expiration(new Date(System.currentTimeMillis() + 1000 * 60))
+                .signWith(generateSecretKey(app.getApiKeyEntity().getApiKey().toString()))
+                .compact();
+    }
 
-
-    public String refreshToken(ClientAuth authUser) {
+    public String refreshToken(AuthUser authUser) {
         return Jwts.builder().subject(authUser.getUserId().toString()).issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
                 .signWith(generateSecretKey())
+                .compact();
+    }
+
+    public String refreshToken(AuthUser authUser, AppEntity app) {
+        return Jwts.builder().subject(authUser.getUserId().toString()).issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
+                .signWith(generateSecretKey(app.getApiKeyEntity().getApiKey().toString()))
                 .compact();
     }
 
@@ -47,11 +68,20 @@ public class JwtService {
     public UUID generateUserIdFromToken(String token) {
         Claims claims = getClaims(token);
         String userIdString = claims.getSubject(); // Assuming you're storing userId in subject
-
         try {
             return UUID.fromString(userIdString);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Invalid UUID format in token");
+        }
+    }
+
+    public UserType extractUserType(String token) {
+        Claims claims = getClaims(token);
+        String userTypeString = claims.get("userType", String.class);
+        try {
+            return UserType.valueOf(userTypeString);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid userType in token: " + userTypeString);
         }
     }
 

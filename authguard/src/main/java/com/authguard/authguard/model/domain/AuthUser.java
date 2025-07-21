@@ -24,7 +24,8 @@ public class AuthUser implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAuthorities'");
+        // throw new UnsupportedOperationException("Unimplemented method 'getAuthorities'");
     }
 }

@@ -28,13 +28,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ClientAuthController {
     private final ClientService clientService;
-    private final AuthService clientAuthService;
+    private final AuthService authService;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest,
             HttpServletRequest request,
             HttpServletResponse response) {
-        String token[] = clientAuthService.validateLogin(loginRequest);
+        String token[] = authService.validateLogin(loginRequest);
         Cookie refreshToken = new Cookie("refresh-token", token[1]);
         refreshToken.setHttpOnly(true);
         refreshToken.setPath("/auth/client/refresh");
@@ -62,7 +62,7 @@ public class ClientAuthController {
         }
         if (refreshToken == null)
             throw new ResourceException("refresh token not found");
-        String[] tokens = clientAuthService.refreshToken(refreshToken);
+        String[] tokens = authService.refreshToken(refreshToken);
         Cookie NewrefreshToken = new Cookie("refresh-token", tokens[1]);
         NewrefreshToken.setHttpOnly(true);
         NewrefreshToken.setPath("/auth/client/refresh");

@@ -13,7 +13,7 @@ public class UserController {
     @PostMapping("/get")
     public String postMethodName() {  
         
-        return "";
+        return "Name is Fuck Man";
     }
     
 }

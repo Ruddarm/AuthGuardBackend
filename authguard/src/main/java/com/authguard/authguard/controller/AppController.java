@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -33,4 +34,10 @@ public class AppController {
         AppEntity app = appService.createApp(AppMapper.toAppEntity(appRequest), clientId);
         return new ResponseEntity<>(AppMapper.toAppResponse(app), HttpStatus.CREATED);
     }
+
+    @GetMapping("app/apiKey/{appId}")
+    public String putMethodName(@PathVariable UUID appId) throws ResourceException {
+        return appService.generateApiKey(appId);
+    }
+
 }

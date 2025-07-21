@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -18,23 +19,22 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(
-    name="user_app"
-)
+@Table(name = "user_app")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class UserAppLinkEntity {
     @Id
-    @GeneratedValue(strategy=GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID linkID;
-    @ManyToOne
-    @JoinColumn(name="user_Id", nullable=false)
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_Id", nullable = false)
     private UserEntity user;
-    @ManyToOne
-    @JoinColumn(name="app_Id" ,nullable=false)
-    private AppEntity  app;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "app_Id", nullable = false)
+    private AppEntity app;
 
     @CreationTimestamp
     private LocalDateTime firstLogin;
