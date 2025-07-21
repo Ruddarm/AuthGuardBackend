@@ -1,7 +1,7 @@
 package com.authguard.authguard.model.entity;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -14,6 +14,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -34,7 +35,7 @@ public class AppEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID appId;
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String appName;
     @Column
     private boolean status;
@@ -46,6 +47,7 @@ public class AppEntity {
     @OneToOne
     @JoinColumn(name = "apiKeyId")
     private ApiKeyEntity apiKeyEntity;
-    @OneToMany(mappedBy = "app", fetch=FetchType.LAZY, cascade={CascadeType.REMOVE} , orphanRemoval=true)
-    private List<UserEntity> user;
+
+    @OneToMany(mappedBy = "app", cascade = { CascadeType.ALL }, orphanRemoval = true)
+    private Set<UserAppLinkEntity> appUsers;
 }

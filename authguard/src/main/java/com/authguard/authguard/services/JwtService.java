@@ -8,7 +8,8 @@ import javax.crypto.SecretKey;
 
 import org.springframework.stereotype.Service;
 
-import com.authguard.authguard.model.domain.ClientUser;
+import com.authguard.authguard.model.domain.ClientAuth;
+import com.authguard.authguard.model.entity.UserEntity;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -23,16 +24,18 @@ public class JwtService {
         return Keys.hmacShaKeyFor(SecretJwtKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createToken(ClientUser clientUser) {
-        return Jwts.builder().subject(clientUser.getUserId().toString()).claim("email", clientUser.getUsername())
+    public String createToken(ClientAuth authUser) {
+        return Jwts.builder().subject(authUser.getUserId().toString()).claim("email", authUser.getUsername())
                 .issuedAt(new Date()).expiration(new Date(System.currentTimeMillis() + 1000 * 60))
                 .signWith(generateSecretKey())
                 .compact();
     }
 
-    public String refreshToken(ClientUser clientUser) {
-        return Jwts.builder().subject(clientUser.getUserId().toString()).issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60*60*24*7))
+
+
+    public String refreshToken(ClientAuth authUser) {
+        return Jwts.builder().subject(authUser.getUserId().toString()).issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
                 .signWith(generateSecretKey())
                 .compact();
     }

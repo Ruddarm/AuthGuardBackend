@@ -10,16 +10,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-@AllArgsConstructor
-@NoArgsConstructor
+
 @Data
-@Builder
-public class ClientUser implements UserDetails {
-    private UUID userId;
-    private String username;
-    private String password;
-
+@SuperBuilder
+public class ClientAuth extends AuthUser {
+  
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

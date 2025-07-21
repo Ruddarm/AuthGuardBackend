@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.authguard.authguard.Exception.ResourceException;
 import com.authguard.authguard.model.dto.ClientRequest;
 import com.authguard.authguard.model.dto.ClientResponse;
@@ -15,8 +14,9 @@ import com.authguard.authguard.model.dto.LoginRequest;
 import com.authguard.authguard.model.dto.LoginResponse;
 import com.authguard.authguard.model.entity.ClientEntity;
 import com.authguard.authguard.model.mapper.ClientMapper;
-import com.authguard.authguard.services.ClientAuthService;
+import com.authguard.authguard.services.AuthService;
 import com.authguard.authguard.services.ClientService;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,9 +28,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ClientAuthController {
     private final ClientService clientService;
-    private final ClientAuthService clientAuthService;
+    private final AuthService clientAuthService;
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest,
             HttpServletRequest request,
             HttpServletResponse response) {
@@ -39,7 +39,7 @@ public class ClientAuthController {
         refreshToken.setHttpOnly(true);
         refreshToken.setPath("/auth/client/refresh");
         response.addCookie(refreshToken);
-        return new ResponseEntity<>(LoginResponse.builder().accessToken(token[0]).build(), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(LoginResponse.builder().accessToken(token[0]).clientID(token[2]).build(), HttpStatus.ACCEPTED);
     }
 
     @PostMapping("/signup")

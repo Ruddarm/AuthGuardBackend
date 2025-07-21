@@ -33,12 +33,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({ ResourceException.class })
     public ResponseEntity<ErrorResponse> handleOtherExceptions(Exception ex) {
         // System.err.println("Exception occured in exception");
-        return new ResponseEntity<>(new ErrorResponse("Invalid credentials"), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler({ BadCredentialsException.class, AuthenticationException.class })
     public ResponseEntity<ErrorResponse> handleCredentialExceptions(Exception ex) {
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
-  
+
+    @ExceptionHandler({ Exception.class })
+    public ResponseEntity<ErrorResponse> handelException(Exception ex) {
+        
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
 }
