@@ -13,4 +13,5 @@ public class AppResponse {
     private String appName;
     private List<String> domainList;
     private boolean status;
+    private UUID apiKey;
 }

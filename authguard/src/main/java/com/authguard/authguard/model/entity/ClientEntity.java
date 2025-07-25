@@ -31,13 +31,15 @@ public class ClientEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID clientId;
     @Column(nullable = false)
-    private String name;
+    private String firstName;
+    @Column(nullable = false)
+    private String lastName;
     @Column(unique = true, nullable = false)
     private String email;
     @Column(nullable = false)
     private String hashPassword;
-    @Column(unique = true, nullable = false)
-    private String contactNumber;
+    // @Column(unique = true, nullable = false)
+    // private String contactNumber;
     @Column
     @CreationTimestamp
     private LocalDate createdAt;
@@ -45,7 +47,7 @@ public class ClientEntity {
     private String country;
     @Column
     private boolean emailVerified;
-    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY , cascade={CascadeType.ALL},orphanRemoval = true)
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval = true)
     private List<AppEntity> apps;
 
 }

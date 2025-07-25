@@ -19,7 +19,11 @@ public class ClientRequest {
     @NotBlank(message="Name is empty")
     @NotNull(message="Name is required")
     @Size(min=2)
-    String name;
+    String firstName;
+    @NotBlank(message="Name is empty")
+    @NotNull(message="Name is required")
+    @Size(min=2)
+    String lastName;
     @NotBlank(message="Password is empty" )
     @NotNull(message="password is requird")
     @Size(min=8)
@@ -29,8 +33,8 @@ public class ClientRequest {
     @NotBlank(message="Email is empty")
     @NotNull(message="Email is required")
     String email;
-    @NotBlank(message="Contact Number is not valid")
-    @NotNull(message="Contact number is required")
-    @Size(min=10,max=10,message="Contact Number is upto 10 digit only")
-    String contactNumber;
+    // @NotBlank(message="Contact Number is not valid")
+    // @NotNull(message="Contact number is required")
+    // @Size(min=10,max=10,message="Contact Number is upto 10 digit only")
+    // String contactNumber;
 }

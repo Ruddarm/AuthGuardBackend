@@ -9,14 +9,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.*;
-// import com.authguard.authguard.services.AuthUserService;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.authguard.authguard.services.ClientService;
 import com.authguard.authguard.services.JwtService;
@@ -29,7 +29,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WebSecurityConfiguration {
 
-    // private final AuthUserService clientUserSerivce;
     private final ClientService clientService;
     private final UserService userService;
     private final PasswordEncoder pswdEncoder;
@@ -73,13 +72,6 @@ public class WebSecurityConfiguration {
         daoprovider.setPasswordEncoder(pswdEncoder);
         return daoprovider;
     }
-
-    // @Bean
-    // AuthenticationManager authenticationManager(AuthenticationConfiguration
-    // authenticationConfiguration)
-    // throws Exception {
-    // return authenticationConfiguration.getAuthenticationManager();
-    // }
 
     @Bean
     AuthenticationManager authenticationManager() {

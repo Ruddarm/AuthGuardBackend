@@ -9,10 +9,8 @@ import javax.crypto.SecretKey;
 import org.springframework.stereotype.Service;
 
 import com.authguard.authguard.model.domain.AuthUser;
-import com.authguard.authguard.model.domain.ClientAuth;
 import com.authguard.authguard.model.domain.UserType;
 import com.authguard.authguard.model.entity.AppEntity;
-import com.authguard.authguard.model.entity.UserEntity;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -42,13 +40,16 @@ public class JwtService {
     public String createToken(AuthUser authUser, AppEntity app) {
         return Jwts.builder().subject(authUser.getUserId().toString()).claim("email", authUser.getUsername())
                 .claim("userType", authUser.getUserType())
+                .claim("appId", app.getAppId())
                 .issuedAt(new Date()).expiration(new Date(System.currentTimeMillis() + 1000 * 60))
                 .signWith(generateSecretKey(app.getApiKeyEntity().getApiKey().toString()))
                 .compact();
     }
 
     public String refreshToken(AuthUser authUser) {
-        return Jwts.builder().subject(authUser.getUserId().toString()).issuedAt(new Date())
+        System.out.println("User type is " + authUser.getUserType());
+        return Jwts.builder().subject(authUser.getUserId().toString()).claim("userType", authUser.getUserType())
+                .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
                 .signWith(generateSecretKey())
                 .compact();
@@ -56,12 +57,17 @@ public class JwtService {
 
     public String refreshToken(AuthUser authUser, AppEntity app) {
         return Jwts.builder().subject(authUser.getUserId().toString()).issuedAt(new Date())
+                .claim("appId", app.getAppId())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
                 .signWith(generateSecretKey(app.getApiKeyEntity().getApiKey().toString()))
                 .compact();
     }
 
     public Claims getClaims(String token) {
+        return Jwts.parser().verifyWith(generateSecretKey()).build().parseSignedClaims(token).getPayload();
+    }
+
+    public Claims getClaims(String token, AppEntity app) {
         return Jwts.parser().verifyWith(generateSecretKey()).build().parseSignedClaims(token).getPayload();
     }
 
@@ -78,6 +84,7 @@ public class JwtService {
     public UserType extractUserType(String token) {
         Claims claims = getClaims(token);
         String userTypeString = claims.get("userType", String.class);
+        System.out.println("User Type String " + userTypeString);
         try {
             return UserType.valueOf(userTypeString);
         } catch (IllegalArgumentException e) {

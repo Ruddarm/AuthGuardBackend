@@ -14,4 +14,9 @@ public class UserResponse {
     private String lastName;
     private String email;
     private String accessToken;
+    public UserResponse(String fname, String lname,String email){
+        this.firstName= fname;
+        this.lastName = lname;
+        this.email = email;
+    }
 }

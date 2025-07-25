@@ -9,7 +9,7 @@ import com.authguard.authguard.model.entity.ClientEntity;
 
 public  interface   ClientRepository extends  JpaRepository<ClientEntity, UUID> {
     public boolean existsByEmail(String email);
-    public boolean existsByContactNumber(String number);
+    // public boolean existsByContactNumber(String number);
     public Optional<ClientEntity> findByEmail(String email);
     
 }

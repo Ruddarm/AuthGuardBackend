@@ -8,13 +8,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClientResponse  {
-    private UUID clientId;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String accessToken;
+@Builder
+public class AppSummary {
+    private UUID appId;
+    private String appName;
 }

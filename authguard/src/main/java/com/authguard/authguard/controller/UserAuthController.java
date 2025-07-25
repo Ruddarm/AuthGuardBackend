@@ -1,5 +1,7 @@
 package com.authguard.authguard.controller;
 
+import java.net.http.HttpResponse;
+
 import org.hibernate.annotations.View;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -70,10 +72,23 @@ public class UserAuthController {
     }
 
     @PostMapping("/verify/app/login")
-    public ResponseEntity<?> validateapplogin(@Valid @RequestBody ClientUserLoginRequest clientUserLoginRequest)
+    public ResponseEntity<UserResponse> validateapplogin(
+            @Valid @RequestBody ClientUserLoginRequest clientUserLoginRequest, HttpServletResponse response)
             throws ResourceException, UsernameNotFoundException {
-        appUserAuthService.authenticate(clientUserLoginRequest);
-        return new ResponseEntity<>("", HttpStatus.OK);
+        String[] data = appUserAuthService.authenticate(clientUserLoginRequest);
+        //
+        // String[] { accessToken, refreshToken, authUser.getUserId().toString(),
+        // user.getFirstName(),
+        // user.getLastName(), user.getEmail() };
+        //
+        String cookie = String.format(
+                "refresh_token=%s; Path=/; HttpOnly; SameSite=Lax; Max-Age=%d",
+                data[1], 7 * 24 * 60 * 60);
+        response.setHeader("Set-Cookie", cookie);
+
+        return new ResponseEntity<>(
+                UserResponse.builder().accessToken(data[0]).firstName(data[3]).lastName(data[4]).email(data[5]).build(),
+                HttpStatus.OK);
     }
 
 }

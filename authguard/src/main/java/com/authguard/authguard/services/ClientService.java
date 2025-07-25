@@ -27,9 +27,9 @@ public class ClientService implements UserDetailsService {
         if (clientRepo.existsByEmail(clientEntity.getEmail())) {
             throw new ResourceException("Email Already Exist");
         }
-        if (clientRepo.existsByContactNumber(clientEntity.getContactNumber())) {
-            throw new ResourceException("Contact Number Already exist");
-        }
+        // if (clientRepo.existsByContactNumber(clientEntity.getContactNumber())) {
+        //     throw new ResourceException("Contact Number Already exist");
+        // }
         clientEntity.setHashPassword(passwordEncoder.encode(clientEntity.getHashPassword()));
         return clientRepo.save(clientEntity);
     }

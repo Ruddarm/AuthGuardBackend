@@ -44,6 +44,7 @@ public class AuthService {
             user = userService.loadUserById(clientId)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         }
+        user.setUserType(userType);
         String accessToken = jwtService.createToken(user);
         refreshToken = jwtService.refreshToken(user);
         return new String[] { accessToken, refreshToken };

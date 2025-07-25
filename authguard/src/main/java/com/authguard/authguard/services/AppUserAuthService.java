@@ -12,7 +12,6 @@ import com.authguard.authguard.Exception.ResourceException;
 import com.authguard.authguard.model.domain.AuthUser;
 import com.authguard.authguard.model.dto.ClientUserLoginRequest;
 import com.authguard.authguard.model.entity.AppEntity;
-import com.authguard.authguard.model.entity.UserAppLinkEntity;
 import com.authguard.authguard.model.entity.UserEntity;
 
 import lombok.RequiredArgsConstructor;
@@ -37,12 +36,14 @@ public class AppUserAuthService {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(clientUserLoginRequest.getUsername(),
                             clientUserLoginRequest.getPassword()));
-            userAppLinkService.linkUserApp(app, userService.findByEmail(clientUserLoginRequest.getUsername())
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found ")));
+            UserEntity user = userService.findByEmail(clientUserLoginRequest.getUsername())
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found "));
+            userAppLinkService.linkUserApp(app, user);
             AuthUser authUser = (AuthUser) authentication.getPrincipal();
-            String accessToken = jwtService.createToken(authUser,app);
-            String refreshToken = jwtService.refreshToken(authUser,app);
-            return new String[] { accessToken, refreshToken, authUser.getUserId().toString() };
+            String accessToken = jwtService.createToken(authUser, app);
+            String refreshToken = jwtService.refreshToken(authUser, app);
+            return new String[] { accessToken, refreshToken, authUser.getUserId().toString(), user.getFirstName(),
+                    user.getLastName(), user.getEmail() };
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Invalid UUID format in token");
         }
