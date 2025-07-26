@@ -53,7 +53,8 @@ public class UserService implements UserDetailsService {
         Optional<UserEntity> userEntityOptional = userRepostiory.findById(id);
         if (userEntityOptional.isPresent()) {
             UserEntity userEntity = userEntityOptional.get();
-            return Optional.of(UserAuth.builder().userId(userEntity.getUserId()).build());
+            return Optional
+                    .of(UserAuth.builder().userId(userEntity.getUserId()).username(userEntity.getEmail()).build());
         } else {
             return Optional.empty();
         }

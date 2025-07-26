@@ -2,16 +2,17 @@ package com.authguard.authguard.config;
 
 import java.io.IOException;
 import java.util.UUID;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import com.authguard.authguard.model.domain.ClientAuth;
 import com.authguard.authguard.services.ClientService;
 import com.authguard.authguard.services.JwtService;
-import com.authguard.authguard.services.UserService;
+
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -40,7 +41,6 @@ public class ClientJwtAuthFilter extends OncePerRequestFilter {
             ClientAuth clientUser = clientService.loadUserById(clientId)
                     .orElseThrow(() -> new UsernameNotFoundException("Client not found"));
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
-                System.out.println("Iside context settig something in ClientJwtFilter ");
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(clientUser,
                         null,
                         null);
@@ -51,7 +51,6 @@ public class ClientJwtAuthFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException ex) {
             System.out.println(ex);
-            // Directly write error to response
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.setContentType("application/json");
             response.getWriter().write("{\"message\": \"Token is expired\"}");

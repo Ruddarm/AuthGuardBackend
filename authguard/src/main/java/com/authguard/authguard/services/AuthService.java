@@ -2,6 +2,7 @@ package com.authguard.authguard.services;
 
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -9,23 +10,45 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.authguard.authguard.model.domain.AuthUser;
-import com.authguard.authguard.model.domain.ClientAuth;
 import com.authguard.authguard.model.domain.UserType;
 import com.authguard.authguard.model.dto.LoginRequest;
 
-import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 public class AuthService {
 
     private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
+    @Qualifier("clientAuthManager")
+    private final AuthenticationManager clientAuthManager;
+    @Qualifier("userAuthManager")
+    private final AuthenticationManager userAuthManager;
     private final ClientService clientSerivce;
     private final UserService userService;
 
-    public String[] validateLogin(LoginRequest loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
+    public AuthService(
+            JwtService jwtservice,
+            @Qualifier("clientAuthManager") AuthenticationManager clientAuthManager,
+            @Qualifier("userAuthManager") AuthenticationManager userAuthManager, ClientService clientSerivce,
+            UserService userService) {
+        this.jwtService = jwtservice;
+        this.clientAuthManager = clientAuthManager;
+        this.userAuthManager = userAuthManager;
+        this.clientSerivce = clientSerivce;
+        this.userService = userService;
+    }
+
+    public String[] validateClientLogin(LoginRequest loginRequest) {
+        Authentication authentication = clientAuthManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        AuthUser authUser = (AuthUser) authentication.getPrincipal();
+        String accessToken = jwtService.createToken(authUser);
+        String refreshToken = jwtService.refreshToken(authUser);
+        return new String[] { accessToken, refreshToken, authUser.getUserId().toString() };
+    }
+
+    public String[] validateUserLogin(LoginRequest loginRequest) {
+        System.out.println("Inside user validion method");
+        Authentication authentication = userAuthManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
         AuthUser authUser = (AuthUser) authentication.getPrincipal();
         String accessToken = jwtService.createToken(authUser);
@@ -34,14 +57,14 @@ public class AuthService {
     }
 
     public String[] refreshToken(String refreshToken) {
-        UUID clientId = jwtService.generateUserIdFromToken(refreshToken);
+        UUID userId = jwtService.generateUserIdFromToken(refreshToken);
         UserType userType = jwtService.extractUserType(refreshToken);
         AuthUser user = null;
         if (UserType.Client == userType) {
-            user = clientSerivce.loadUserById(clientId)
+            user = clientSerivce.loadUserById(userId)
                     .orElseThrow(() -> new UsernameNotFoundException("Client not found"));
         } else if (UserType.User == userType) {
-            user = userService.loadUserById(clientId)
+            user = userService.loadUserById(userId)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         }
         user.setUserType(userType);

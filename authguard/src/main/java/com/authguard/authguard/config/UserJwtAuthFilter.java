@@ -10,7 +10,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.authguard.authguard.model.domain.UserAuth;
-import com.authguard.authguard.services.ClientService;
 import com.authguard.authguard.services.JwtService;
 import com.authguard.authguard.services.UserService;
 
@@ -38,12 +37,11 @@ public class UserJwtAuthFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
-            String token = tokenHeader.split("Bearer ")[1];
-            UUID clientId = jwtService.generateUserIdFromToken(token);
-            UserAuth userAuth = userService.loadUserById(clientId)
+            String token = tokenHeader .split("Bearer ")[1];
+            UUID userId = jwtService.generateUserIdFromToken(token);
+            UserAuth userAuth = userService.loadUserById(userId)
                     .orElseThrow(() -> new UsernameNotFoundException("User not Found"));
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
-                System.out.println("Iside context settig something in userJwt Filter");
 
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userAuth,
                         null,

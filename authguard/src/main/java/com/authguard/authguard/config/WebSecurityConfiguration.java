@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -38,7 +39,7 @@ public class WebSecurityConfiguration {
     @Order(1)
     SecurityFilterChain clientAuthFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource()))
-                .securityMatcher("/auth/client/**", "/client/**")
+                .securityMatcher("/auth/client/**", "/client/**", "/apps/**")
                 .authorizeHttpRequests(
                         (auth) -> auth.requestMatchers("/auth/client/**").permitAll().anyRequest().authenticated())
                 .csrf(crsfConfig -> crsfConfig.disable())
@@ -50,12 +51,13 @@ public class WebSecurityConfiguration {
     @Bean
     @Order(2)
     SecurityFilterChain userAuthFitlerChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.securityMatcher("/auth/user/**", "/user/**")
+        httpSecurity.securityMatcher("/user/**")
                 .cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(
                         (auth) -> auth.requestMatchers("/auth/user/**").permitAll().anyRequest().authenticated())
                 .csrf(crsfConfig -> crsfConfig.disable())
-                .addFilterBefore(new UserJwtAuthFilter(jwtService,userService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new UserJwtAuthFilter(jwtService, userService),
+                        UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }
 
@@ -73,9 +75,16 @@ public class WebSecurityConfiguration {
         return daoprovider;
     }
 
-    @Bean
-    AuthenticationManager authenticationManager() {
-        List<AuthenticationProvider> providers = List.of(clientAuthProvider(), userAuthProvider());
+    @Bean("userAuthManager")
+    AuthenticationManager userAuthenticationManager() {
+        List<AuthenticationProvider> providers = List.of(userAuthProvider());
+        return new ProviderManager(providers);
+    }
+
+    @Bean("clientAuthManager")
+    @Primary
+    AuthenticationManager clientAuthenticationManager() {
+        List<AuthenticationProvider> providers = List.of(clientAuthProvider());
         return new ProviderManager(providers);
     }
 

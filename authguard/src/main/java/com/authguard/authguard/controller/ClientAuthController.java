@@ -35,7 +35,7 @@ public class ClientAuthController {
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest,
             HttpServletRequest request,
             HttpServletResponse response) {
-        String token[] = authService.validateLogin(loginRequest);
+        String token[] = authService.validateClientLogin(loginRequest);
         // Cookie refreshToken = new Cookie("refresh_token", token[1]);
         // // refreshToken.setHttpOnly(true);
         // refreshToken.setPath("/");
@@ -44,7 +44,7 @@ public class ClientAuthController {
         // response.addCookie(refreshToken);
 
         String cookie = String.format(
-                "refresh_token=%s; Path=/; HttpOnly; SameSite=Lax; Max-Age=%d",
+                "client_refresh_token=%s; Path=/; HttpOnly; SameSite=Lax; Max-Age=%d",
                 token[1], 7 * 24 * 60 * 60);
         response.setHeader("Set-Cookie", cookie);
 
@@ -65,7 +65,7 @@ public class ClientAuthController {
         Cookie[] cookies = request.getCookies();
         String refreshToken = null;
         for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("refresh_token")) {
+            if (cookie.getName().equals("client_refresh_token")) {
                 refreshToken = cookie.getValue();
                 break;
             }
@@ -79,7 +79,7 @@ public class ClientAuthController {
         // NewrefreshToken.setPath("/auth/client/refresh");
         // response.addCookie(NewrefreshToken);
         String cookie = String.format(
-                "refresh_token=%s; Path=/; HttpOnly; SameSite=Lax; Max-Age=%d",
+                "client_refresh_token=%s; Path=/; HttpOnly; SameSite=Lax; Max-Age=%d",
                 tokens[1], 7 * 24 * 60 * 60);
         response.setHeader("Set-Cookie", cookie);
         return new ResponseEntity<>(LoginResponse.builder().accessToken(tokens[0]).build(), HttpStatus.ACCEPTED);

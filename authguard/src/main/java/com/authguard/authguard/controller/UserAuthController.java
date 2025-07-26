@@ -1,8 +1,5 @@
 package com.authguard.authguard.controller;
 
-import java.net.http.HttpResponse;
-
-import org.hibernate.annotations.View;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -35,60 +32,98 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/auth/user")
 public class UserAuthController {
-    private final UserService userService;
-    private final AuthService authService;
-    private final UserMapper userMapper;
-    private final AppUserAuthService appUserAuthService;
+        private final UserService userService;
+        private final AuthService authService;
+        private final UserMapper userMapper;
+        private final AppUserAuthService appUserAuthService;
 
-    @PostMapping("/signup")
-    public ResponseEntity<UserResponse> userSignup(@Valid @RequestBody UserRequest userRequest,
-            HttpServletRequest request,
-            HttpServletResponse response)
-            throws ResourceException {
-        UserResponse userResponse = userService.saveUser(userMapper.userRequestToUserEntity(userRequest));
-        return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
-    }
+        @PostMapping("/signup")
+        public ResponseEntity<UserResponse> userSignup(@Valid @RequestBody UserRequest userRequest,
+                        HttpServletRequest request,
+                        HttpServletResponse response)
+                        throws ResourceException {
+                UserResponse userResponse = userService.saveUser(userMapper.userRequestToUserEntity(userRequest));
+                return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
+        }
 
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponse> userLogin(@Valid @RequestBody LoginRequest loginRequest,
-            HttpServletRequest request,
-            HttpServletResponse response)
-            throws ResourceException {
-        String token[] = authService.validateLogin(loginRequest);
-        Cookie refreshToken = new Cookie("refresh-token", token[1]);
-        refreshToken.setHttpOnly(true);
-        refreshToken.setPath("/auth/user/refresh");
-        response.addCookie(refreshToken);
-        return new ResponseEntity<>(LoginResponse.builder().accessToken(token[0]).clientID(token[2]).build(),
-                HttpStatus.ACCEPTED);
-    }
+        // user login route
+        @PostMapping("/login")
+        public ResponseEntity<LoginResponse> userLogin(@Valid @RequestBody LoginRequest loginRequest,
+                        HttpServletRequest request,
+                        HttpServletResponse response)
+                        throws ResourceException {
+                String token[] = authService.validateUserLogin(loginRequest);
+                // Cookie refreshToken = new Cookie("refresh-token", token[1]);
+                // refreshToken.setHttpOnly(true);
+                // refreshToken.setPath("/auth/user/refresh");
+                // response.addCookie(refreshToken);
 
-    @GetMapping("/login")
-    public RedirectView loginredirct(@RequestParam String clientId, @RequestParam String appId,
-            @RequestParam String redirectUrl) {
-        String loginUrl = "http://localhost:5173" + "?clientId=" + clientId + "&appId=" + appId + "&redirectUrl="
-                + redirectUrl;
-        return new RedirectView(loginUrl);
-    }
+                String cookie = String.format(
+                                "user_refresh_token=%s; Path=/; HttpOnly; SameSite=Lax; Max-Age=%d",
+                                token[1], 7 * 24 * 60 * 60);
+                response.setHeader("Set-Cookie", cookie);
+                return new ResponseEntity<>(LoginResponse.builder().accessToken(token[0]).clientID(token[2]).build(),
+                                HttpStatus.ACCEPTED);
+        }
+        // user token refresh route
+        @GetMapping("/refresh")
+        public ResponseEntity<LoginResponse> refreshToken(HttpServletRequest request,
+                        HttpServletResponse response) throws ResourceException {
+                Cookie[] cookies = request.getCookies();
+                String refreshToken = null;
+                for (Cookie cookie : cookies) {
+                        if (cookie.getName().equals("user_refresh_token")) {
+                                refreshToken = cookie.getValue();
+                                break;
+                        }
+                }
+                if (refreshToken == null)
+                        throw new ResourceException("refresh token not found");
+                // System.out.println(refreshToken);
+                String[] tokens = authService.refreshToken(refreshToken);
+                // Cookie NewrefreshToken = new Cookie("refresh-token", tokens[1]);
+                // NewrefreshToken.setHttpOnly(true);
+                // NewrefreshToken.setPath("/auth/client/refresh");
+                // response.addCookie(NewrefreshToken);
+                String cookie = String.format(
+                                "user_refresh_token=%s; Path=/; HttpOnly; SameSite=Lax; Max-Age=%d",
+                                tokens[1], 7 * 24 * 60 * 60);
+                response.setHeader("Set-Cookie", cookie);
+                return new ResponseEntity<>(LoginResponse.builder().accessToken(tokens[0]).build(),
+                                HttpStatus.ACCEPTED);
+                // return new ResponseEntity<LoginResponse>();
+        }
 
-    @PostMapping("/verify/app/login")
-    public ResponseEntity<UserResponse> validateapplogin(
-            @Valid @RequestBody ClientUserLoginRequest clientUserLoginRequest, HttpServletResponse response)
-            throws ResourceException, UsernameNotFoundException {
-        String[] data = appUserAuthService.authenticate(clientUserLoginRequest);
-        //
-        // String[] { accessToken, refreshToken, authUser.getUserId().toString(),
-        // user.getFirstName(),
-        // user.getLastName(), user.getEmail() };
-        //
-        String cookie = String.format(
-                "refresh_token=%s; Path=/; HttpOnly; SameSite=Lax; Max-Age=%d",
-                data[1], 7 * 24 * 60 * 60);
-        response.setHeader("Set-Cookie", cookie);
+        // Redirect to authgaurd client user login portal
+        @GetMapping("/login")
+        public RedirectView loginredirct(@RequestParam String clientId, @RequestParam String appId,
+                        @RequestParam String redirectUrl) {
+                String loginUrl = "http://localhost:5173" + "?clientId=" + clientId + "&appId=" + appId
+                                + "&redirectUrl="
+                                + redirectUrl;
+                return new RedirectView(loginUrl);
+        }
 
-        return new ResponseEntity<>(
-                UserResponse.builder().accessToken(data[0]).firstName(data[3]).lastName(data[4]).email(data[5]).build(),
-                HttpStatus.OK);
-    }
+        // verify login of client app for user
+        @PostMapping("/verify/app/login")
+        public ResponseEntity<UserResponse> validateapplogin(
+                        @Valid @RequestBody ClientUserLoginRequest clientUserLoginRequest, HttpServletResponse response)
+                        throws ResourceException, UsernameNotFoundException {
+                String[] data = appUserAuthService.authenticate(clientUserLoginRequest);
+                //
+                // String[] { accessToken, refreshToken, authUser.getUserId().toString(),
+                // user.getFirstName(),
+                // user.getLastName(), user.getEmail() };
+                //
+                String cookie = String.format(
+                                "refresh_token=%s; Path=/; HttpOnly; SameSite=Lax; Max-Age=%d",
+                                data[1], 7 * 24 * 60 * 60);
+                response.setHeader("Set-Cookie", cookie);
+
+                return new ResponseEntity<>(
+                                UserResponse.builder().accessToken(data[0]).firstName(data[3]).lastName(data[4])
+                                                .email(data[5]).build(),
+                                HttpStatus.OK);
+        }
 
 }
