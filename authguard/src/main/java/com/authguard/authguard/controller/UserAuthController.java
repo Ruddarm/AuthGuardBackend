@@ -21,6 +21,7 @@ import com.authguard.authguard.model.mapper.UserMapper;
 import com.authguard.authguard.services.AppUserAuthService;
 import com.authguard.authguard.services.AuthService;
 import com.authguard.authguard.services.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -62,9 +63,12 @@ public class UserAuthController {
                                 "user_refresh_token=%s; Path=/; HttpOnly; SameSite=Lax; Max-Age=%d",
                                 token[1], 7 * 24 * 60 * 60);
                 response.setHeader("Set-Cookie", cookie);
-                return new ResponseEntity<>(LoginResponse.builder().accessToken(token[0]).clientID(token[2]).build(),
+                return new ResponseEntity<>(
+                                LoginResponse.builder().accessToken(token[0]).userId(token[2]).userEmail(token[3])
+                                                .build(),
                                 HttpStatus.ACCEPTED);
         }
+
         // user token refresh route
         @GetMapping("/refresh")
         public ResponseEntity<LoginResponse> refreshToken(HttpServletRequest request,
@@ -89,7 +93,9 @@ public class UserAuthController {
                                 "user_refresh_token=%s; Path=/; HttpOnly; SameSite=Lax; Max-Age=%d",
                                 tokens[1], 7 * 24 * 60 * 60);
                 response.setHeader("Set-Cookie", cookie);
-                return new ResponseEntity<>(LoginResponse.builder().accessToken(tokens[0]).build(),
+                return new ResponseEntity<>(
+                                LoginResponse.builder().accessToken(tokens[0]).userId(tokens[2]).userEmail(tokens[3])
+                                                .build(),
                                 HttpStatus.ACCEPTED);
                 // return new ResponseEntity<LoginResponse>();
         }
@@ -105,25 +111,13 @@ public class UserAuthController {
         }
 
         // verify login of client app for user
-        @PostMapping("/verify/app/login")
-        public ResponseEntity<UserResponse> validateapplogin(
-                        @Valid @RequestBody ClientUserLoginRequest clientUserLoginRequest, HttpServletResponse response)
-                        throws ResourceException, UsernameNotFoundException {
-                String[] data = appUserAuthService.authenticate(clientUserLoginRequest);
-                //
-                // String[] { accessToken, refreshToken, authUser.getUserId().toString(),
-                // user.getFirstName(),
-                // user.getLastName(), user.getEmail() };
-                //
-                String cookie = String.format(
-                                "refresh_token=%s; Path=/; HttpOnly; SameSite=Lax; Max-Age=%d",
-                                data[1], 7 * 24 * 60 * 60);
-                response.setHeader("Set-Cookie", cookie);
-
-                return new ResponseEntity<>(
-                                UserResponse.builder().accessToken(data[0]).firstName(data[3]).lastName(data[4])
-                                                .email(data[5]).build(),
-                                HttpStatus.OK);
+        @PostMapping("/oath/app/code")
+        public ResponseEntity<String> generateCodeApp(
+                        @Valid @RequestBody ClientUserLoginRequest clientUserLoginRequest,
+                        HttpServletResponse response)
+                        throws ResourceException, UsernameNotFoundException, JsonProcessingException {
+                String authCode = appUserAuthService.authenticateAndGenerateCode(clientUserLoginRequest);
+                return ResponseEntity.ok(authCode);
         }
 
 }

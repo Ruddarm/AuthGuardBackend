@@ -41,7 +41,7 @@ public class WebSecurityConfiguration {
         httpSecurity.cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource()))
                 .securityMatcher("/auth/client/**", "/client/**", "/apps/**")
                 .authorizeHttpRequests(
-                        (auth) -> auth.requestMatchers("/auth/client/**").permitAll().anyRequest().authenticated())
+                        (auth) -> auth.requestMatchers("/auth/client/**" , "app/info/**").permitAll().anyRequest().authenticated())
                 .csrf(crsfConfig -> crsfConfig.disable())
                 .addFilterBefore(new ClientJwtAuthFilter(jwtService, clientService),
                         UsernamePasswordAuthenticationFilter.class);

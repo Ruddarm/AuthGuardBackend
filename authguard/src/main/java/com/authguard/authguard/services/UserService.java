@@ -41,6 +41,10 @@ public class UserService implements UserDetailsService {
         return userRepostiory.findByEmail(email);
     }
 
+    public Optional<UserEntity> findById(UUID userId) {
+        return userRepostiory.findById(userId);
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity user = findByEmail(username)

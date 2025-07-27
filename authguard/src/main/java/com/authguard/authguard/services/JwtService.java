@@ -37,14 +37,14 @@ public class JwtService {
                 .compact();
     }
 
-    public String createToken(AuthUser authUser, AppEntity app) {
-        return Jwts.builder().subject(authUser.getUserId().toString()).claim("email", authUser.getUsername())
-                .claim("userType", authUser.getUserType())
-                .claim("appId", app.getAppId())
-                .issuedAt(new Date()).expiration(new Date(System.currentTimeMillis() + 1000 * 60))
-                .signWith(generateSecretKey(app.getApiKeyEntity().getApiKey().toString()))
-                .compact();
-    }
+    // public String createToken(AuthUser authUser, AppEntity app) {
+    //     return Jwts.builder().subject(authUser.getUserId().toString()).claim("email", authUser.getUsername())
+    //             .claim("userType", authUser.getUserType())
+    //             .claim("appId", app.getAppId())
+    //             .issuedAt(new Date()).expiration(new Date(System.currentTimeMillis() + 1000 * 60))
+    //             .signWith(generateSecretKey(app.getApiKeyEntity().getApiKey().toString()))
+    //             .compact();
+    // }
 
     public String refreshToken(AuthUser authUser) {
         System.out.println("User type is " + authUser.getUserType());
@@ -55,13 +55,13 @@ public class JwtService {
                 .compact();
     }
 
-    public String refreshToken(AuthUser authUser, AppEntity app) {
-        return Jwts.builder().subject(authUser.getUserId().toString()).issuedAt(new Date())
-                .claim("appId", app.getAppId())
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
-                .signWith(generateSecretKey(app.getApiKeyEntity().getApiKey().toString()))
-                .compact();
-    }
+    // public String refreshToken(AuthUser authUser, AppEntity app) {
+    //     return Jwts.builder().subject(authUser.getUserId().toString()).issuedAt(new Date())
+    //             .claim("appId", app.getAppId())
+    //             .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
+    //             .signWith(generateSecretKey(app.getApiKeyEntity().getApiKey().toString()))
+    //             .compact();
+    // }
 
     public Claims getClaims(String token) {
         return Jwts.parser().verifyWith(generateSecretKey()).build().parseSignedClaims(token).getPayload();

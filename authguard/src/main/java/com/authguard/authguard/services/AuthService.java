@@ -13,7 +13,6 @@ import com.authguard.authguard.model.domain.AuthUser;
 import com.authguard.authguard.model.domain.UserType;
 import com.authguard.authguard.model.dto.LoginRequest;
 
-
 @Service
 public class AuthService {
 
@@ -43,7 +42,7 @@ public class AuthService {
         AuthUser authUser = (AuthUser) authentication.getPrincipal();
         String accessToken = jwtService.createToken(authUser);
         String refreshToken = jwtService.refreshToken(authUser);
-        return new String[] { accessToken, refreshToken, authUser.getUserId().toString() };
+        return new String[] { accessToken, refreshToken, authUser.getUserId().toString(), authUser.getUsername() };
     }
 
     public String[] validateUserLogin(LoginRequest loginRequest) {
@@ -53,7 +52,7 @@ public class AuthService {
         AuthUser authUser = (AuthUser) authentication.getPrincipal();
         String accessToken = jwtService.createToken(authUser);
         String refreshToken = jwtService.refreshToken(authUser);
-        return new String[] { accessToken, refreshToken, authUser.getUserId().toString() };
+        return new String[] { accessToken, refreshToken, authUser.getUserId().toString(), authUser.getUsername() };
     }
 
     public String[] refreshToken(String refreshToken) {
@@ -70,7 +69,7 @@ public class AuthService {
         user.setUserType(userType);
         String accessToken = jwtService.createToken(user);
         refreshToken = jwtService.refreshToken(user);
-        return new String[] { accessToken, refreshToken };
+        return new String[] { accessToken, refreshToken, user.getUserId().toString(), user.getUsername() };
     }
 
 }

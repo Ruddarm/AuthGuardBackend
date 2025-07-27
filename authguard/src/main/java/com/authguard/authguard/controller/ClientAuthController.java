@@ -48,7 +48,8 @@ public class ClientAuthController {
                 token[1], 7 * 24 * 60 * 60);
         response.setHeader("Set-Cookie", cookie);
 
-        return new ResponseEntity<>(LoginResponse.builder().accessToken(token[0]).clientID(token[2]).build(),
+        return new ResponseEntity<>(
+                LoginResponse.builder().accessToken(token[0]).userId(token[2]).userEmail(token[3]).build(),
                 HttpStatus.ACCEPTED);
     }
 
@@ -82,7 +83,12 @@ public class ClientAuthController {
                 "client_refresh_token=%s; Path=/; HttpOnly; SameSite=Lax; Max-Age=%d",
                 tokens[1], 7 * 24 * 60 * 60);
         response.setHeader("Set-Cookie", cookie);
-        return new ResponseEntity<>(LoginResponse.builder().accessToken(tokens[0]).build(), HttpStatus.ACCEPTED);
+        // return new
+        // ResponseEntity<>(LoginResponse.builder().accessToken(tokens[0]).build(),
+        // HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(
+                LoginResponse.builder().accessToken(tokens[0]).userId(tokens[2]).userEmail(tokens[3]).build(),
+                HttpStatus.ACCEPTED);
         // return new ResponseEntity<LoginResponse>();
     }
 
