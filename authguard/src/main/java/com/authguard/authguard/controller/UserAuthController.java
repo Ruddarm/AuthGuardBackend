@@ -1,5 +1,7 @@
 package com.authguard.authguard.controller;
 
+import java.net.URI;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -112,12 +114,15 @@ public class UserAuthController {
 
         // verify login of client app for user
         @PostMapping("/oath/app/code")
-        public ResponseEntity<String> generateCodeApp(
+        public ResponseEntity<Void> generateCodeApp(
                         @Valid @RequestBody ClientUserLoginRequest clientUserLoginRequest,
                         HttpServletResponse response)
                         throws ResourceException, UsernameNotFoundException, JsonProcessingException {
                 String authCode = appUserAuthService.authenticateAndGenerateCode(clientUserLoginRequest);
-                return ResponseEntity.ok(authCode);
+                URI redirectUrl = URI.create(clientUserLoginRequest.getRedirecturl() + "?code=" + authCode);
+                // System.out.println(redirectUrl);
+                return ResponseEntity.status(HttpStatus.FOUND).location(redirectUrl).build();
+                // return ResponseEntity.ok(authCode);
         }
 
 }

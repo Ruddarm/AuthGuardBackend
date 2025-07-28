@@ -1,5 +1,10 @@
 package com.authguard.authguard.controller;
 
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,16 +37,23 @@ public class UserController {
     }
 
     @PostMapping("/app/code")
-    public String getCodeForApp(@Valid @RequestBody ClientAppRequest clientAppRequest,
+    public ResponseEntity<Map<String, String>> getCodeForApp(@Valid @RequestBody ClientAppRequest clientAppRequest,
             @AuthenticationPrincipal UserAuth userAuth) throws ResourceException, JsonProcessingException {
-                
+
         String code = appUserAuthService.genterateCode(clientAppRequest.getClientId(), clientAppRequest.getAppId(),
                 userAuth.getUserId());
         redisService.saveAuthCode(code, AuthCodePayload.builder().clientId(clientAppRequest.getClientId())
                 .appId(clientAppRequest.getAppId()).userId(userAuth.getUserId()).build());
-        return code;
+        URI redirectUrl = URI.create(clientAppRequest.getRedirecturl() + "?code=" + code);
+        // System.out.println(redirectUrl);
+        // return ResponseEntity.status(HttpStatus.FOUND).location(redirectUrl).build();
+        Map<String, String> response = new HashMap<>();
+        response.put("code", code);
+        response.put("redirecturl", clientAppRequest.getRedirecturl());
+
+        return ResponseEntity.ok(response);
+
     }
-    
 
     // @PostMapping("/app/oath/login")
     // public ResponseEntity<String> linkUserToApp(

@@ -18,4 +18,7 @@ public class ClientAppRequest {
     private UUID clientId;
     @NotNull
     private UUID appId;
+    @NotNull
+    @NotBlank
+    private String redirecturl;
 }

@@ -24,4 +24,7 @@ public class ClientUserLoginRequest {
     @NotNull
     @NotBlank
     private String password;
+    @NotNull
+    @NotBlank
+    private String redirecturl;
 }
