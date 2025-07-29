@@ -15,8 +15,8 @@ import com.authguard.authguard.model.entity.UserEntity;
 
 public interface UserAppLinkRepository extends JpaRepository<UserAppLinkEntity, UUID> {
     
-    @Query("select  new com.authguard.authguard.model.dto.UserResponse(link.user.firstName,link.user.lastName,link.user.email) from UserAppLinkEntity link where link.app.appId = :appId ")
-    List<UserResponse> findUserByApp(@Param("appId")UUID appId);
+    @Query("select  new com.authguard.authguard.model.dto.UserResponse(link.user.firstName,link.user.lastName,link.user.email) from UserAppLinkEntity link where link.app.client_id = :client_id ")
+    List<UserResponse> findUserByApp(@Param("appId")UUID client_id);
     Optional<UserAppLinkEntity> findByUserAndApp(UserEntity user, AppEntity app);
     boolean existsByUserAndApp(UserEntity user, AppEntity app);
 

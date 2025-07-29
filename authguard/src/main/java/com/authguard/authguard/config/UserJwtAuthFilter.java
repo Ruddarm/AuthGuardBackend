@@ -29,7 +29,7 @@ public class UserJwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
             FilterChain filterChain)
             throws ServletException, IOException, UsernameNotFoundException, ExpiredJwtException {
-        System.out.println("Inside user JWT AUTHFILter");
+        // System.out.println("Inside user JWT AUTHFILter");
         final String tokenHeader = request.getHeader("Authorization");
         try {
             if (tokenHeader == null || !tokenHeader.startsWith("Bearer ")) {

@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({ Exception.class })
     public ResponseEntity<ErrorResponse> handelException(Exception ex) {
-        // ex.printStackTrace();
+        ex.printStackTrace();
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 

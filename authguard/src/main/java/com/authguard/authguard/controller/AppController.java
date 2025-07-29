@@ -43,12 +43,12 @@ public class AppController {
 
     // get particular app
     @GetMapping("/app/")
-    public ResponseEntity<AppResponse> getApp(@RequestParam UUID clientId, @RequestParam UUID appId)
+    public ResponseEntity<AppResponse> getApp(@RequestParam UUID client_id)
             throws ResourceException {
-        AppEntity appEntity = appService.validateApp(appId, clientId);
+        AppEntity appEntity = appService.validateApp(client_id);
         return ResponseEntity
-                .ok(AppResponse.builder().appName(appEntity.getAppName()).appId(appEntity.getAppId())
-                        .apiKey(appEntity.getApiKeyEntity().getApiKey()).build());
+                .ok(AppResponse.builder().appName(appEntity.getAppName()).client_Id(client_id)
+                        .client_secret(appEntity.getClient_secret()).build());
     }
 
     // get user of aprticualr app
@@ -66,10 +66,10 @@ public class AppController {
     }
 
     // get app api key
-    @GetMapping("app/apiKey/{appId}")
-    public String getApiKey(@PathVariable UUID appId) throws ResourceException {
-        return appService.generateApiKey(appId);
-    }
+    // @GetMapping("app/apiKey/{appId}")
+    // public String getApiKey(@PathVariable UUID appId) throws ResourceException {
+    // return appService.generateApiKey(appId);
+    // }
 
     @DeleteMapping("app/{appId}")
     public ResponseEntity<?> deleteApp(@PathVariable UUID appId) {

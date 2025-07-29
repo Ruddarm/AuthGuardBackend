@@ -40,16 +40,17 @@ public class UserController {
     public ResponseEntity<Map<String, String>> getCodeForApp(@Valid @RequestBody ClientAppRequest clientAppRequest,
             @AuthenticationPrincipal UserAuth userAuth) throws ResourceException, JsonProcessingException {
 
-        String code = appUserAuthService.genterateCode(clientAppRequest.getClientId(), clientAppRequest.getAppId(),
+        String code = appUserAuthService.genterateCode(clientAppRequest.getClient_id(), clientAppRequest.getNonce(),
                 userAuth.getUserId());
-        redisService.saveAuthCode(code, AuthCodePayload.builder().clientId(clientAppRequest.getClientId())
-                .appId(clientAppRequest.getAppId()).userId(userAuth.getUserId()).build());
-        URI redirectUrl = URI.create(clientAppRequest.getRedirecturl() + "?code=" + code);
-        // System.out.println(redirectUrl);
+        // redisService.saveAuthCode(code,
+        // AuthCodePayload.builder().client_id(clientAppRequest.getClient_id())
+        // .userId(userAuth.getUserId()).build());
+        URI redirectUrl = URI.create(clientAppRequest.getRedirectUrl() + "?code=" + code);
+        System.out.println(redirectUrl);
         // return ResponseEntity.status(HttpStatus.FOUND).location(redirectUrl).build();
         Map<String, String> response = new HashMap<>();
         response.put("code", code);
-        response.put("redirecturl", clientAppRequest.getRedirecturl());
+        response.put("redirecturi", clientAppRequest.getRedirectUrl());
 
         return ResponseEntity.ok(response);
 

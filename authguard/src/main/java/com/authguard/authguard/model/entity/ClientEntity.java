@@ -29,7 +29,7 @@ import lombok.NoArgsConstructor;
 public class ClientEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID clientId;
+    private UUID userId;
     @Column(nullable = false)
     private String firstName;
     @Column(nullable = false)

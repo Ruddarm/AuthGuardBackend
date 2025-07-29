@@ -14,9 +14,9 @@ import com.authguard.authguard.model.entity.ClientEntity;
 
 public interface AppRepostiory extends JpaRepository<AppEntity, UUID> {
 
-    @Query("SELECT  new com.authguard.authguard.model.dto.AppSummary(app.appId,app.appName) from AppEntity app where app.client.clientId=:clientId")
-    public List<AppSummary> findAppSummaryByClientId(@Param("clientId") UUID clientId);
+    @Query("SELECT  new com.authguard.authguard.model.dto.AppSummary(app.client_id,app.appName) from AppEntity app where app.client.userId=:userId")
+    public List<AppSummary> findAppSummaryByUserId(@Param("userId") UUID userId);
 
-    public Optional<AppEntity> findByAppIdAndClient(UUID appId, ClientEntity client);
+    // public Optional<AppEntity> findByClient_idAndClient(UUID client_id, ClientEntity client);
 
 }

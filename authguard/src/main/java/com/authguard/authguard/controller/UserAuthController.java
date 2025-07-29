@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.view.RedirectView;
 
 import com.authguard.authguard.Exception.ResourceException;
 import com.authguard.authguard.model.dto.ClientUserLoginRequest;
@@ -103,23 +101,15 @@ public class UserAuthController {
         }
 
         // Redirect to authgaurd client user login portal
-        @GetMapping("/login")
-        public RedirectView loginredirct(@RequestParam String clientId, @RequestParam String appId,
-                        @RequestParam String redirectUrl) {
-                String loginUrl = "http://localhost:5173" + "?clientId=" + clientId + "&appId=" + appId
-                                + "&redirectUrl="
-                                + redirectUrl;
-                return new RedirectView(loginUrl);
-        }
-
+    
         // verify login of client app for user
-        @PostMapping("/oath/app/code")
+        @PostMapping("/oauth/app/code")
         public ResponseEntity<Void> generateCodeApp(
                         @Valid @RequestBody ClientUserLoginRequest clientUserLoginRequest,
                         HttpServletResponse response)
                         throws ResourceException, UsernameNotFoundException, JsonProcessingException {
                 String authCode = appUserAuthService.authenticateAndGenerateCode(clientUserLoginRequest);
-                URI redirectUrl = URI.create(clientUserLoginRequest.getRedirecturl() + "?code=" + authCode);
+                URI redirectUrl = URI.create(clientUserLoginRequest.getRedirect_url() + "?code=" + authCode);
                 // System.out.println(redirectUrl);
                 return ResponseEntity.status(HttpStatus.FOUND).location(redirectUrl).build();
                 // return ResponseEntity.ok(authCode);

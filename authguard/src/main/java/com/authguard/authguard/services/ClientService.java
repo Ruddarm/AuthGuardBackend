@@ -42,7 +42,7 @@ public class ClientService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         ClientEntity clientEntity = clientRepo.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        return ClientAuth.builder().userId(clientEntity.getClientId()).username(clientEntity.getEmail())
+        return ClientAuth.builder().userId(clientEntity.getUserId()).username(clientEntity.getEmail())
                 .password(clientEntity.getHashPassword()).userType(UserType.Client).build();
 
     }
@@ -52,7 +52,7 @@ public class ClientService implements UserDetailsService {
 
         if (clientEntityOptional.isPresent()) {
             ClientEntity clientEntity = clientEntityOptional.get();
-            return Optional.of(ClientAuth.builder().userId(clientEntity.getClientId()).build());
+            return Optional.of(ClientAuth.builder().userId(clientEntity.getUserId()).build());
         } else {
             return Optional.empty();
         }

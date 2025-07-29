@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class AppSummary {
-    private UUID appId;
+    private UUID client_id;
     private String appName;
 }

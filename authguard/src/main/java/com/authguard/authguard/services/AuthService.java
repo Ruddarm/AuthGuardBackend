@@ -1,5 +1,7 @@
 package com.authguard.authguard.services;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.authguard.authguard.model.domain.AuthUser;
 import com.authguard.authguard.model.domain.UserType;
 import com.authguard.authguard.model.dto.LoginRequest;
+import com.authguard.authguard.model.entity.UserEntity;
 
 @Service
 public class AuthService {
@@ -70,6 +73,19 @@ public class AuthService {
         String accessToken = jwtService.createToken(user);
         refreshToken = jwtService.refreshToken(user);
         return new String[] { accessToken, refreshToken, user.getUserId().toString(), user.getUsername() };
+    }
+
+    public Map<String, Object> getUserinfo(String token) throws UsernameNotFoundException {
+        UUID userId = jwtService.generateUserIdFromToken(token);
+        UUID clientId = jwtService.extractClientIDFromToken(token);
+        UserEntity user = userService.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        Map<String, Object> userInfo = new HashMap<>();
+        userInfo.put("sub", user.getUserId());
+        userInfo.put("name", user.getFirstName() + user.getLastName());
+        userInfo.put("email", user.getEmail());
+        userInfo.put("client_id",clientId.toString());
+        return userInfo;
     }
 
 }

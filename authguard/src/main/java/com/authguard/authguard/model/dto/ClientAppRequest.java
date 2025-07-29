@@ -15,10 +15,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ClientAppRequest {
     @NotNull
-    private UUID clientId;
-    @NotNull
-    private UUID appId;
+    private UUID client_id;
     @NotNull
     @NotBlank
-    private String redirecturl;
+    private String redirectUrl;
+    private String nonce;
 }

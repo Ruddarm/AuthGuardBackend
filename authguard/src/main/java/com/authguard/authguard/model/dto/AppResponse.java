@@ -9,9 +9,9 @@ import lombok.Data;
 @Data
 @Builder
 public class AppResponse {
-    private UUID appId;
+    private UUID client_Id;
     private String appName;
     private List<String> domainList;
     private boolean status;
-    private UUID apiKey;
+    private String client_secret;
 }

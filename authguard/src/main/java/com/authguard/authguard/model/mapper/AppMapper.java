@@ -13,7 +13,8 @@ public class AppMapper {
     }
 
     public static AppResponse toAppResponse(AppEntity appEntity) {
-        AppResponse appResponse = AppResponse.builder().appId(appEntity.getAppId()).appName(appEntity.getAppName())
+        AppResponse appResponse = AppResponse.builder().client_Id(appEntity.getClient_id())
+                .appName(appEntity.getAppName())
                 .status(appEntity.isStatus()).build();
         return appResponse;
     }

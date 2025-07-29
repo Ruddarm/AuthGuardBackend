@@ -33,7 +33,7 @@ public class UserAppLinkEntity {
     @JoinColumn(name = "user_Id", nullable = false)
     private UserEntity user;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "app_Id", nullable = false)
+    @JoinColumn(name = "client_id", nullable = false)
     private AppEntity app;
 
     @CreationTimestamp

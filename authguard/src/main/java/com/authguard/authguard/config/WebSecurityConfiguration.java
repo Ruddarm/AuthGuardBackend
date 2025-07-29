@@ -38,10 +38,13 @@ public class WebSecurityConfiguration {
     @Bean
     @Order(1)
     SecurityFilterChain clientAuthFilterChain(HttpSecurity httpSecurity) throws Exception {
+        // System.out.println("inside filter client");
+
         httpSecurity.cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource()))
                 .securityMatcher("/auth/client/**", "/client/**", "/apps/**")
                 .authorizeHttpRequests(
-                        (auth) -> auth.requestMatchers("/auth/client/**" , "app/info/**").permitAll().anyRequest().authenticated())
+                        (auth) -> auth.requestMatchers("/auth/client/**", "app/info/**").permitAll().anyRequest()
+                                .authenticated())
                 .csrf(crsfConfig -> crsfConfig.disable())
                 .addFilterBefore(new ClientJwtAuthFilter(jwtService, clientService),
                         UsernamePasswordAuthenticationFilter.class);
@@ -51,6 +54,8 @@ public class WebSecurityConfiguration {
     @Bean
     @Order(2)
     SecurityFilterChain userAuthFitlerChain(HttpSecurity httpSecurity) throws Exception {
+        // System.out.println("inside filter user");
+
         httpSecurity.securityMatcher("/user/**")
                 .cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(
@@ -58,6 +63,25 @@ public class WebSecurityConfiguration {
                 .csrf(crsfConfig -> crsfConfig.disable())
                 .addFilterBefore(new UserJwtAuthFilter(jwtService, userService),
                         UsernamePasswordAuthenticationFilter.class);
+        return httpSecurity.build();
+    }
+
+    @Bean
+    @Order(3)
+    SecurityFilterChain oauth2FilterChain(HttpSecurity httpSecurity) throws Exception {
+        System.out.println("inside filter oauth2");
+        httpSecurity
+                .securityMatcher("/oauth2/**")
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/oauth2/**",
+                                "/login/**",
+                                "/userinfo",
+                                "/.well-known/**")
+                        .permitAll()
+                        .anyRequest().authenticated())
+                .csrf(csrf -> csrf.disable());
         return httpSecurity.build();
     }
 
@@ -90,8 +114,9 @@ public class WebSecurityConfiguration {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+        
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:8081"));
         config.setAllowedMethods(List.of("*"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

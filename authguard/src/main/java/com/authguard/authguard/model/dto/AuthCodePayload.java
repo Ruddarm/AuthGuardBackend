@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AuthCodePayload implements Serializable {
     private UUID userId;
-    private UUID clientId;
-    private UUID appId;
-    private UUID appApiKey;
+    private UUID client_id;
+    private String client_secret;
     private UUID appUserLinkId;
+    private String nonce;
 }

@@ -16,7 +16,7 @@ public class ClientMapper {
     }
     
     public static ClientResponse toClientResponse(ClientEntity clientEntity) {
-        ClientResponse client = ClientResponse.builder().clientId(clientEntity.getClientId())
+        ClientResponse client = ClientResponse.builder().userId(clientEntity.getUserId())
                 .firstName(clientEntity.getFirstName()).lastName(clientEntity.getLastName())
                 .email(clientEntity.getEmail()).build();
         return client;

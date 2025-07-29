@@ -12,12 +12,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClientUserLoginRequest {
+    // @NotNull
+    // @NotBlank
+    // private String appId;
     @NotNull
     @NotBlank
-    private String appId;
-    @NotNull
-    @NotBlank
-    private String clientId;
+    private String client_id;
     @NotNull
     @NotBlank
     private String username;
@@ -26,5 +26,5 @@ public class ClientUserLoginRequest {
     private String password;
     @NotNull
     @NotBlank
-    private String redirecturl;
+    private String redirect_url;
 }
