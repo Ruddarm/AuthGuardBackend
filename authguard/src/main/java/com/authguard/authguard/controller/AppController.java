@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.authguard.authguard.Exception.ResourceException;
@@ -36,32 +35,32 @@ public class AppController {
     public final UserAppLinkService userAppLinkService;
 
     // get list of appp
-    @GetMapping("/app/summary/{clientId}")
-    public ResponseEntity<List<AppSummary>> getAppSummary(@PathVariable String clientId) throws ResourceException {
-        return new ResponseEntity<>(appService.getAppSummary(clientId), HttpStatus.OK);
+    @GetMapping("/app/summary/{userId}")
+    public ResponseEntity<List<AppSummary>> getAppSummary(@PathVariable String userId) throws ResourceException {
+        return new ResponseEntity<>(appService.getAppSummary(userId), HttpStatus.OK);
     }
 
     // get particular app
-    @GetMapping("/app/")
-    public ResponseEntity<AppResponse> getApp(@RequestParam UUID client_id)
+    @GetMapping("/app/{clientId}")
+    public ResponseEntity<AppResponse> getApp(@PathVariable UUID clientId)
             throws ResourceException {
-        AppEntity appEntity = appService.validateApp(client_id);
+        AppEntity appEntity = appService.validateApp(clientId);
         return ResponseEntity
-                .ok(AppResponse.builder().appName(appEntity.getAppName()).client_Id(client_id)
+                .ok(AppResponse.builder().appName(appEntity.getAppName()).client_Id(clientId)
                         .client_secret(appEntity.getClient_secret()).build());
     }
 
     // get user of aprticualr app
-    @GetMapping("/app/user/{appId}")
-    public ResponseEntity<List<UserResponse>> getUserOfApp(@PathVariable UUID appId) {
-        return ResponseEntity.ok(userAppLinkService.getListOfUserByApp(appId));
+    @GetMapping("/app/user/{clientId}")
+    public ResponseEntity<List<UserResponse>> getUserOfApp(@PathVariable UUID clientId) {
+        return ResponseEntity.ok(userAppLinkService.getListOfUserByApp(clientId));
     }
 
     // create app route
-    @PostMapping("/app/{clientId}")
-    public ResponseEntity<AppResponse> createApp(@PathVariable UUID clientId,
+    @PostMapping("/app/{userId}")
+    public ResponseEntity<AppResponse> createApp(@PathVariable UUID userId,
             @Valid @RequestBody AppRequest appRequest) throws ResourceException {
-        AppEntity app = appService.createApp(AppMapper.toAppEntity(appRequest), clientId);
+        AppEntity app = appService.createApp(AppMapper.toAppEntity(appRequest), userId);
         return new ResponseEntity<>(AppMapper.toAppResponse(app), HttpStatus.CREATED);
     }
 
@@ -71,9 +70,9 @@ public class AppController {
     // return appService.generateApiKey(appId);
     // }
 
-    @DeleteMapping("app/{appId}")
-    public ResponseEntity<?> deleteApp(@PathVariable UUID appId) {
-        appService.deleteApp(appId);
+    @DeleteMapping("app/{clientId}")
+    public ResponseEntity<?> deleteApp(@PathVariable UUID clientId) {
+        appService.deleteApp(clientId);
         return ResponseEntity.ok("");
     }
 
