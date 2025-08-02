@@ -1,5 +1,6 @@
 package com.authguard.authguard.model.entity;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -26,7 +27,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ClientEntity {
+public class ClientEntity implements  Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID userId;

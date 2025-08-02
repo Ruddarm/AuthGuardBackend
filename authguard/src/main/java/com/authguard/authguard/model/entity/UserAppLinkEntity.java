@@ -1,5 +1,6 @@
 package com.authguard.authguard.model.entity;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -24,7 +25,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserAppLinkEntity {
+public class UserAppLinkEntity implements  Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID linkID;

@@ -3,6 +3,7 @@ package com.authguard.authguard.services;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ClientService implements UserDetailsService {
-    public final ClientRepository clientRepo;
+    private final ClientRepository clientRepo;
     private final PasswordEncoder passwordEncoder;
 
     public ClientEntity saveClient(ClientEntity clientEntity) throws ResourceException {
@@ -37,6 +38,12 @@ public class ClientService implements UserDetailsService {
     public Optional<ClientEntity> findByEmail(String email) {
         return clientRepo.findByEmail(email);
     }
+    
+    public Optional<ClientEntity> findById(UUID userId) {
+        return clientRepo.findById(userId);
+    }
+
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -47,6 +54,7 @@ public class ClientService implements UserDetailsService {
 
     }
 
+    @Cacheable(cacheNames="logedInUser", key="#id" )
     public Optional<ClientAuth> loadUserById(UUID id) {
         Optional<ClientEntity> clientEntityOptional = clientRepo.findById(id);
 

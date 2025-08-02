@@ -32,7 +32,7 @@ public class ClientJwtAuthFilter extends OncePerRequestFilter {
         final String tokenHeader = request.getHeader("Authorization");
         try {
             if (tokenHeader == null || !tokenHeader.startsWith("Bearer ")) {
-                System.out.println("Header is null or something in Client Jwt Filter");
+                // System.out.println("Header is null or something in Client Jwt Filter");
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -47,7 +47,7 @@ public class ClientJwtAuthFilter extends OncePerRequestFilter {
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
-            System.out.println("going next filter");
+            // System.out.println("going next filter");
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException ex) {
             System.out.println(ex);

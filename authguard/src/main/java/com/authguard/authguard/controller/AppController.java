@@ -61,6 +61,7 @@ public class AppController {
     public ResponseEntity<AppResponse> createApp(@PathVariable UUID userId,
             @Valid @RequestBody AppRequest appRequest) throws ResourceException {
         AppEntity app = appService.createApp(AppMapper.toAppEntity(appRequest), userId);
+        appService.UpdateApplistCache(userId);
         return new ResponseEntity<>(AppMapper.toAppResponse(app), HttpStatus.CREATED);
     }
 
